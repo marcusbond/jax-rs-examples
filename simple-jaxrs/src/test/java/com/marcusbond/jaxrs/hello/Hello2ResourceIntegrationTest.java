@@ -17,6 +17,10 @@ import com.sun.jersey.api.client.ClientResponse;
 /**
  * JUnit4 integration test that runs the {@link Hello2Resource} service in an
  * embedded Jetty container and checks the response is as expected.
+ * <p>
+ * The testResource method runs through each RESTful service method and
+ * subsequently performs a check on the returned status code and message body
+ * along with folow up checks to prove the state on the server is as expected.
  * 
  * @author Marcus Bond
  * 

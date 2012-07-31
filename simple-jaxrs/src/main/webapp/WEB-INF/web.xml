@@ -12,14 +12,6 @@
 			<param-name>com.sun.jersey.config.property.packages</param-name>
 			<param-value>com.marcusbond.jaxrs;</param-value>
 		</init-param>
-		
-		<!-- This turns on POJO mapping for JSON removing the need for JAXB annotations when you just use JSON -->
-		<!-- 
-		<init-param>
-			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		  -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>

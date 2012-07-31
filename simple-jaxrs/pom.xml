@@ -11,7 +11,6 @@
 	<properties>
 		<junit.version>4.10</junit.version>
 		<com.sun.jersey.version>1.13</com.sun.jersey.version>
-		<org.apache.shiro.version>1.2.1</org.apache.shiro.version>
 	</properties>
 	<dependencies>
 		<!-- Need this for running in Eclipse -->
@@ -31,32 +30,6 @@
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-servlet</artifactId>
 			<version>${com.sun.jersey.version}</version>
-		</dependency>
-		
-		<!-- ######## Added for JSON support ###### --> 
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>${com.sun.jersey.version}</version>
-		</dependency>
-		<!-- TODO: Setup maven excludes etc. 
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-spring</artifactId>
-			<version>${com.sun.jersey.version}</version>
-		</dependency>
-		 -->
-
-		<!-- Shiro Security -->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-			<version>${org.apache.shiro.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-web</artifactId>
-			<version>${org.apache.shiro.version}</version>
 		</dependency>
 		
 		<!-- Utilities -->
