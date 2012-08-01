@@ -36,8 +36,13 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<!-- Here there are now two mappings to the Jersey servlet, one as an "External" API and one as a web application API -->
 	<servlet-mapping>
 		<servlet-name>Jersey-Servlet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/rest-api/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Jersey-Servlet</servlet-name>
+		<url-pattern>/rest-webapp/*</url-pattern>
 	</servlet-mapping>
 </web-app>

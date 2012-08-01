@@ -42,7 +42,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 public class Greeting2ResourceIntegrationTest {
 
 	private static final String WEBAPP_DIR = "src/main/webapp";
-	private static final String RESOURCE_URL = "http://localhost:8080/rest/greetings2";
+	private static final String RESOURCE_URL = "http://localhost:8080/rest-api/greetings2";
 
 	private Server server;
 	private ClientConfig clientConfig;

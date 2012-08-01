@@ -2,6 +2,7 @@ package com.marcusbond.jaxrs.employee;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,13 +60,29 @@ public class EmployeeResource {
 	 * @return A {@link List} containing all employee records
 	 */
 	@GET
-	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Employee getEmployee(@PathParam("id") long id) {
+	public List<Employee> getEmployees() {
 		// This will throw an Authorization exception if the current "Subject"
 		// does not have the required permission
 		SecurityUtils.getSubject().checkPermission("employee:get");
-		
+
+		List<Employee> employeeList = new ArrayList<>(employees.values());
+		if (employeeList != null && employeeList.size() > 0) {
+			return employeeList;
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @return A Single {@link Employee} record
+	 */
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employee getEmployee(@PathParam("id") long id) {
+		SecurityUtils.getSubject().checkPermission("employee:get");
+
 		Employee employee = employees.get(id);
 		if (employee != null) {
 			return employee;
@@ -114,7 +131,7 @@ public class EmployeeResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response update(@PathParam("id") long id, Employee employee) {
 		SecurityUtils.getSubject().checkPermission("employee:update");
-		
+
 		if (employees.get(id) == null) {
 			return Response.status(Status.NOT_FOUND)
 					.entity("Record does not exist.").build();

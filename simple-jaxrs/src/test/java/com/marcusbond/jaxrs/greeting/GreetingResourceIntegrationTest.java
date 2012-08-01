@@ -36,7 +36,7 @@ import com.sun.jersey.api.json.JSONConfiguration;
 public class GreetingResourceIntegrationTest {
 
 	private static final String WEBAPP_DIR = "src/main/webapp";
-	private static final String RESOURCE_URL = "http://localhost:8080/rest/greetings";
+	private static final String RESOURCE_URL = "http://localhost:8080/rest-api/greetings";
 
 	private Server server;
 
