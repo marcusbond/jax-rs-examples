@@ -1,29 +1,43 @@
-<web-app 
-  xmlns="http://java.sun.com/xml/ns/javaee" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
-   
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+
 	<display-name>Simple JAX-RS Demo</display-name>
+	
+	
+	<!-- The Shiro Filter and Environment loader listener.. we pass all requests through the filter but the 
+		filter is configured to only require certain url's to be authenticated. Also for the purposes of this
+		example a shiro.ini file is located at the root of the classpath (in the src/main/resources folder)
+	    which contains the security configuration. -->
+	<listener>
+	    <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+	</listener>	
+	<filter>
+		<filter-name>Shiro</filter-name>
+		<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>Shiro</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- The Jersey Servlet -->
 	<servlet>
-		<servlet-name>Jersey-Hello-Servlet</servlet-name>
+		<servlet-name>Jersey-Servlet</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
 			<param-value>com.marcusbond.jaxrs;</param-value>
 		</init-param>
-		
-		<!-- This turns on POJO mapping for JSON removing the need for JAXB annotations when you just use JSON -->
-		<!-- 
 		<init-param>
 			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
 			<param-value>true</param-value>
 		</init-param>
-		  -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Jersey-Hello-Servlet</servlet-name>
+		<servlet-name>Jersey-Servlet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 </web-app>
