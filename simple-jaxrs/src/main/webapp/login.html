@@ -3,25 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <title>Simple JAX-RS | Login</title>
+	<script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
+	<script type="text/javascript" src="js/app.js"></script>
+	<style>
+		@IMPORT url("styles/reset.css");
+		@IMPORT url("styles/style.css");
+		@IMPORT url("styles/jquery-ui-1.8.21.custom.css");
+	</style>
 </head>
 <body>
-<div>
-	<form method="post" action="">
-		<p>
-			<label for="username">Username:</label>
-			<input name="username" id ="username" type="text" />
-		</p>
-		<p>
-			<label for="password">Password:</label>
-			<input name="password" id ="password" type="password" />
-		</p>
-		<p>
-			<button type="submit">Login</button>
-		</p>
-	
-	</form>
-</div>
-
-Login form goes here
+<script type="text/javascript">
+	$(document).ready(function(){
+		App.presentLogin();
+		
+		/* TODO: Another authc equivalent is required to ensure that web api requests when not authenticated return a NOT AUTHORIZED instead of the content of the web page.
+		$.ajax({
+		url : App.apiBaseUrl + "employees",
+		type : "GET",
+		async : false,
+		success : function(response) {
+			alert(response);
+		}
+	}).done(function() {
+	});
+		*/
+    });
+</script>
+</head>
+<body id="loginPage">
+	<div id="dialog-login-form" title="Login">
+		<p class="validateTips"></p>
+		<form method="post" action="">
+			<fieldset>
+				<label for="username">Username:</label>
+				<input type="text" name="username" id ="username" class="text ui-widget-content ui-corner-all" />
+				<label for="password">Password:</label>
+				<input type="password" name="password" id ="password" class="text ui-widget-content ui-corner-all" />
+			</fieldset>
+		</form>
+	</div>
 </body>
 </html>
