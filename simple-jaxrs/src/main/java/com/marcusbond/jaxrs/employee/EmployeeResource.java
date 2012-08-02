@@ -1,7 +1,6 @@
 package com.marcusbond.jaxrs.employee;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.SecurityUtils;
@@ -108,12 +108,9 @@ public class EmployeeResource {
 		employee.setId(nextEmployeeId());
 		employees.put(employee.getId(), employee);
 
-		try {
-			location = new URI(uriInfo.getAbsolutePath() + "/"
-					+ employee.getId());
-		} catch (URISyntaxException e) {
-			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-		}
+		UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
+		uriBuilder.path(Long.toString(employee.getId()));
+		location = uriBuilder.build((Object[]) null);
 
 		return Response.created(location).build();
 	}
