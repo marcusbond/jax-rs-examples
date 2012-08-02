@@ -4,7 +4,7 @@ if (typeof console == "undefined") {
 		}
 	};
 }
-// TODO: pass callbacks to service methods
+
 var App = {};
 App.apiBaseUrl = "rest-webapp/";
 // Form validation util methods
