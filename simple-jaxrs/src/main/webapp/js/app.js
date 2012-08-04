@@ -29,6 +29,30 @@ App.FormValidation = {
 };
 
 /**
+ * Handles common errors that need to be handled consistently. The checks
+ * performed are for a 403 Forbidden and a 401 not authorized with a custom
+ * challenge scheme. In the case of an authentication challenge the user is
+ * redirected to the login page and in the case of a non permitted action a
+ * simple dialog is shown.
+ */
+App.GlobalErrors = {
+	// Returns true if the error was handled, false otherwise
+	ajaxError : function(jqXHR, textStatus, errorThrown) {
+		var httpStatusCode = jqXHR.status;
+		if (httpStatusCode === 403) {
+			$("#error-403").dialog();
+			return true;
+		} else if (httpStatusCode === 401
+				&& jqXHR.getResponseHeader('WWW-Authentication') != null) {
+			// Equivalent of a redirect
+			window.location.replace("login.html");
+			return true;
+		}
+		return false;
+	}
+};
+
+/**
  * Create a JQuery dialog for the login form
  */
 App.presentLogin = function() {
@@ -120,59 +144,57 @@ App.bindEmployeesPage = function() {
 
 	var allFields = $([]).add(firstname).add(surname).add(department);
 
-	$("#dialog-create-employee-form").dialog(
-			{
-				autoOpen : false,
-				height : 320,
-				width : 350,
-				modal : true,
-				buttons : {
-					"Create employee" : function() {
-						var bValid = true;
-						allFields.removeClass("ui-state-error");
+	$("#dialog-create-employee-form")
+			.dialog(
+					{
+						autoOpen : false,
+						height : 320,
+						width : 350,
+						modal : true,
+						buttons : {
+							"Create employee" : function() {
+								var bValid = true;
+								allFields.removeClass("ui-state-error");
 
-						bValid = bValid
-								&& App.FormValidation.checkLength(firstname,
-										"firstname", 1, 50);
-						bValid = bValid
-								&& App.FormValidation.checkLength(surname,
-										"surname", 1, 50);
-						bValid = bValid
-								&& App.FormValidation.checkLength(department,
-										"department", 1, 16);
+								bValid = bValid
+										&& App.FormValidation.checkLength(
+												firstname, "firstname", 1, 50);
+								bValid = bValid
+										&& App.FormValidation.checkLength(
+												surname, "surname", 1, 50);
+								bValid = bValid
+										&& App.FormValidation
+												.checkLength(department,
+														"department", 1, 16);
 
-						if (bValid) {
-							var employee = {
-								firstname : firstname.val(),
-								surname : surname.val(),
-								department : department.val()
-							};
-							var newRecordHandler = function(newId) {
-								App.EmployeeService.get(newId,
-										EmployeesPage.addToList);
-							};
-							var errorHandler = function(error) {
-								if (error === 403) {
-									$("#error-403").dialog();
-								} else {
-									alert("Sorry, something bad happened: "
-											+ error);
+								if (bValid) {
+									var employee = {
+										firstname : firstname.val(),
+										surname : surname.val(),
+										department : department.val()
+									};
+									var newRecordHandler = function(newId) {
+										App.EmployeeService.get(newId,
+												EmployeesPage.addToList);
+									};
+									var errorHandler = function(error) {
+										alert("Sorry, something bad happened: "
+												+ error);
+									};
+
+									App.EmployeeService.create(employee,
+											newRecordHandler, errorHandler);
+									$(this).dialog("close");
 								}
-							};
-
-							App.EmployeeService.create(employee,
-									newRecordHandler, errorHandler);
-							$(this).dialog("close");
+							},
+							Cancel : function() {
+								$(this).dialog("close");
+							}
+						},
+						close : function() {
+							allFields.val("").removeClass("ui-state-error");
 						}
-					},
-					Cancel : function() {
-						$(this).dialog("close");
-					}
-				},
-				close : function() {
-					allFields.val("").removeClass("ui-state-error");
-				}
-			});
+					});
 
 	App.EmployeeService.getAll(EmployeesPage.addAllToList);
 };
@@ -205,7 +227,9 @@ App.EmployeeService.get = function(id, successCallback, errorCallback) {
 		successCallback(data);
 	}).error(function(jqXHR, textStatus, errorThrown) {
 		if (errorCallback) {
-			errorCallback(jqXHR.status);
+			if (!App.GlobalErrors.ajaxError(jqXHR, textStatus, errorThrown)) {
+				errorCallback(jqXHR.status);
+			}
 		}
 	});
 };
@@ -230,7 +254,7 @@ App.EmployeeService.create = function(employee, successCallback, errorCallback) 
 			}
 		},
 		error : function(jqXHR, textStatus, errorThrown) {
-			if (errorCallback) {
+			if (!App.GlobalErrors.ajaxError(jqXHR, textStatus, errorThrown)) {
 				errorCallback(jqXHR.status);
 			}
 		}
