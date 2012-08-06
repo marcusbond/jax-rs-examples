@@ -1,10 +1,7 @@
 package com.marcusbond.jaxrs.employee;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,37 +19,38 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.marcusbond.jaxrs.employee.internal.EmployeeService;
 
 /**
- * A web resource providing CRUD operations for {@link Employee} records. This
- * illustrates the basic use of Apache Shiro security.
+ * A Spring managed web resource providing CRUD operations for {@link Employee}
+ * records.
  * <p>
- * All requests to this resource must be authenticated (handled by filter) and
- * to add, update and delete a user requires the employee:add employee:update
- * and employee:remove permissions respectively
+ * Permissions security is now the responsibility of the {@link EmployeeService}
+ * however all requests to this resource still require authentication via the
+ * Shiro filter.
  * 
  * @author Marcus Bond
  * 
  */
+@Component
+@Scope("request")
 @Path("/employees")
 public class EmployeeResource {
 
-	private static Map<Long, Employee> employees;
-	private static Long lastEmployeeId;
+	private EmployeeService employeeService;
 
-	static {
-		lastEmployeeId = 0L;
-		// Initialise the employees
-		employees = new HashMap<>();
-		Employee employee = new Employee(nextEmployeeId(), "Bruce",
-				"Springsteen", "Bosses");
-		employees.put(employee.getId(), employee);
-		employee = new Employee(nextEmployeeId(), "Com", "Truise", "Audio");
-		employees.put(employee.getId(), employee);
-		employee = new Employee(nextEmployeeId(), "Iggy", "Pop",
-				"Pharmaceuticals");
-		employees.put(employee.getId(), employee);
+	/**
+	 * Sets the {@link EmployeeService} implementation.
+	 * 
+	 * @param employeeService
+	 */
+	@Autowired
+	public void setEmployeeService(EmployeeService employeeService) {
+		this.employeeService = employeeService;
 	}
 
 	/**
@@ -62,15 +60,7 @@ public class EmployeeResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Employee> getEmployees() {
-		// This will throw an Authorization exception if the current "Subject"
-		// does not have the required permission
-		SecurityUtils.getSubject().checkPermission("employee:get");
-
-		List<Employee> employeeList = new ArrayList<>(employees.values());
-		if (employeeList != null && employeeList.size() > 0) {
-			return employeeList;
-		}
-		return null;
+		return employeeService.listAll();
 	}
 
 	/**
@@ -81,9 +71,7 @@ public class EmployeeResource {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Employee getEmployee(@PathParam("id") long id) {
-		SecurityUtils.getSubject().checkPermission("employee:get");
-
-		Employee employee = employees.get(id);
+		Employee employee = employeeService.findById(id);
 		if (employee != null) {
 			return employee;
 		}
@@ -102,11 +90,8 @@ public class EmployeeResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(Employee employee, @Context UriInfo uriInfo) {
-		SecurityUtils.getSubject().checkPermission("employee:add");
-
 		URI location = null;
-		employee.setId(nextEmployeeId());
-		employees.put(employee.getId(), employee);
+		employeeService.create(employee);
 
 		UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
 		uriBuilder.path(Long.toString(employee.getId()));
@@ -127,18 +112,16 @@ public class EmployeeResource {
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response update(@PathParam("id") long id, Employee employee) {
-		SecurityUtils.getSubject().checkPermission("employee:update");
-
-		if (employees.get(id) == null) {
-			return Response.status(Status.NOT_FOUND)
-					.entity("Record does not exist.").build();
-		}
 		if (!(id == employee.getId())) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
-		employees.remove(id);
-		employees.put(id, employee);
-		return Response.noContent().build();
+		try {
+			employeeService.update(employee);
+			return Response.noContent().build();
+		} catch (IllegalArgumentException e) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Record does not exist.").build();
+		}
 	}
 
 	/**
@@ -150,18 +133,16 @@ public class EmployeeResource {
 	@DELETE
 	@Path("{id}")
 	public Response delete(@PathParam("id") long id) {
-		SecurityUtils.getSubject().checkPermission("employee:remove");
-
-		if (employees.get(id) == null) {
+		Employee employee = employeeService.findById(id);
+		if (employee == null) {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
-		employees.remove(id);
-		return Response.noContent().build();
+		try {
+			employeeService.delete(employee);
+			return Response.noContent().build();
+		} catch (IllegalArgumentException e) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Record does not exist.").build();
+		}
 	}
-
-	private synchronized static long nextEmployeeId() {
-		lastEmployeeId++;
-		return lastEmployeeId;
-	}
-
 }
