@@ -1,2 +1,2 @@
-This branch illustrates how to use Apache Shiro in a web environment
-to secure a RESTful resource.
+This branch illustrates how to have Spring manage any JAX-RS resources and
+how to configure Spring management of Shiro.
