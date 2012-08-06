@@ -10,7 +10,7 @@ import org.apache.shiro.web.util.WebUtils;
 
 /**
  * Extends {@link AccessControlFilter} to implement a check as to whether access
- * is allowed and provide an appropriate response in the event that the request
+ * is allowed and provide an appropriate HTTP response in the event that the request
  * is made by a client that is not authenticated.
  * 
  * @author Marcus Bond
