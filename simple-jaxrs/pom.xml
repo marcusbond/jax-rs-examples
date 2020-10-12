@@ -9,7 +9,7 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<junit.version>4.10</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<com.sun.jersey.version>1.13</com.sun.jersey.version>
 		<org.apache.shiro.version>1.2.1</org.apache.shiro.version>
 		<org.springframework.version>3.1.1.RELEASE</org.springframework.version>
